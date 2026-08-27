@@ -1,0 +1,127 @@
+/* WirelessCanvas — 布局与画布，颜色只从 tokens.css 取 */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{padding:14px;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ===== 外壳 ===== */
+.case.app{height:100%;max-width:none;display:flex;flex-direction:column;padding:16px 20px 20px;min-height:0}
+
+/* ===== 顶部铭牌条 ===== */
+.head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid var(--sink);margin-bottom:14px;flex-wrap:wrap}
+.plate h1{font-weight:500;font-size:20px;letter-spacing:.02em}
+.plate h1 b{font-weight:600}
+.plate p{color:var(--mute);font-size:12px;letter-spacing:.06em;margin-top:2px;font-family:var(--mono)}
+.lamps{display:flex;gap:18px}
+.lamp{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;letter-spacing:.08em;color:var(--mute)}
+
+/* 画板旋钮 */
+.dial{display:flex;align-items:center;gap:14px}
+.dial .lbl{font-size:11px;letter-spacing:.1em;color:var(--mute);text-align:right;line-height:1.3}
+.dial .knob{width:58px;height:58px}
+.dial .knob::after{top:5px;width:4px;height:13px;transform-origin:2px 24px}
+.dial fieldset{border:0;display:grid;grid-template-columns:repeat(2,auto);gap:5px 12px;font-size:12.5px;max-height:64px;overflow-y:auto}
+.dial label{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--mute);white-space:nowrap}
+.dial input:checked+span{color:var(--char);font-weight:500}
+
+/* 动作按钮 */
+.actions{display:flex;flex-direction:column;gap:8px}
+.acts-row{display:flex;gap:8px}
+.acts-row .pb{padding:8px 12px;font-size:12.5px}
+
+/* ===== 主体 ===== */
+.body{flex:1;display:flex;gap:14px;min-height:0}
+
+/* 滚动条：细凹槽 + sink 色滑块，贴合仪器语言 */
+.toolcol,.dial fieldset{scrollbar-width:thin;scrollbar-color:var(--sink) transparent}
+.toolcol::-webkit-scrollbar,.dial fieldset::-webkit-scrollbar{width:6px;height:6px}
+.toolcol::-webkit-scrollbar-track,.dial fieldset::-webkit-scrollbar-track{background:transparent}
+.toolcol::-webkit-scrollbar-thumb,.dial fieldset::-webkit-scrollbar-thumb{background:var(--sink);border-radius:4px;box-shadow:inset 0 1px 2px #0002}
+.toolcol::-webkit-scrollbar-thumb:hover,.dial fieldset::-webkit-scrollbar-thumb:hover{background:var(--mute)}
+
+/* 左侧工具立柱 */
+.toolcol{width:96px;flex:none;display:flex;flex-direction:column;gap:8px;overflow-y:auto;padding-right:2px}
+.toolcol .label{margin-bottom:0;margin-top:4px}
+.keygrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.key.tool{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 5px;font-size:9.5px;letter-spacing:.06em;color:var(--char)}
+.key.tool svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.key.tool span{font-weight:500;color:var(--mute)}
+.key.tool.sel span{color:var(--char)}
+.key.off{opacity:.55;pointer-events:none}
+#btn-undo.key.off,#btn-redo.key.off{pointer-events:auto;cursor:default}
+
+/* 墨色档位（radio 圆点直接填墨色） */
+.inks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;justify-items:center;padding:2px 0}
+.inks label{cursor:pointer;display:block;line-height:0}
+.inks input{appearance:none;width:20px;height:20px;border-radius:50%;margin:0;cursor:pointer;
+  box-shadow:inset 0 2px 3px #0003,0 1px 0 #fff}
+.inks input:checked{box-shadow:inset 0 2px 3px #0003,0 1px 0 #fff,0 0 0 2px var(--slab),0 0 0 4px var(--yellow)}
+
+/* 线宽 / 填充档位键 */
+.strokes .key,.fills .key{display:flex;align-items:center;justify-content:center;padding:8px 4px;min-height:30px}
+.strokes .key i{display:block;width:22px;background:var(--char);border-radius:2px}
+.fills .key{font-size:10.5px;letter-spacing:.08em;font-weight:500;color:var(--char)}
+.fills .key i{display:block;width:14px;height:14px;border-radius:3px;box-shadow:inset 0 0 0 1.5px var(--char)}
+.fills .key i.tint{background:color-mix(in srgb,var(--char) 18%,transparent)}
+.fills .key i.solid{background:var(--char)}
+
+/* ===== 画布台面 ===== */
+.stage{position:relative;flex:1;min-width:0;border-radius:var(--r);overflow:hidden;background:var(--slab);
+  box-shadow:var(--sh-sunk),0 0 0 1px var(--sink),0 1px 0 #fff;touch-action:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cv-overlay{pointer-events:none}
+.stage.cur-select{cursor:default}
+.stage.cur-pan{cursor:grab}
+.stage.cur-panning{cursor:grabbing}
+.stage.cur-draw{cursor:crosshair}
+.stage.cur-text{cursor:text}
+
+/* 液晶读数窗（全页唯一） */
+.stage .lcd{position:absolute;right:14px;bottom:14px;width:238px;margin:0;pointer-events:none;user-select:none}
+.lcd .big{font-size:34px;display:flex;align-items:baseline;gap:6px}
+.lcd .big small{font-size:13px}
+.lcd .sub{display:flex;justify-content:space-between;gap:10px;font-size:11px;margin-top:8px;opacity:.85;white-space:nowrap}
+
+/* 缩放档位键 */
+.zoomkeys{position:absolute;left:14px;bottom:14px;display:flex;gap:6px}
+.zoomkeys .key{padding:6px 0;width:34px;text-align:center;font-family:var(--mono);font-size:12.5px;font-weight:500}
+.zoomkeys .key.wide{width:52px;font-size:11.5px}
+
+/* 画布上的文本编辑框 */
+.stage textarea.editor{position:absolute;border:0;outline:none;resize:none;overflow:hidden;background:transparent;
+  color:inherit;font-family:var(--sans);white-space:pre-wrap;word-break:break-word;line-height:1.4;padding:0;margin:0;display:block}
+
+/* ===== 对话框（新建 / 重命名 / 删除画板） ===== */
+dialog.dlg{border:0;margin:auto;padding:20px 22px;width:min(340px,calc(100vw - 48px));
+  background:var(--panel);border-radius:var(--r-case);box-shadow:var(--sh-case);color:var(--char)}
+dialog.dlg::backdrop{background:rgba(42,42,42,.34)}
+.dlg h2{margin-bottom:10px}
+.dlg .msg{font-size:13px;line-height:1.5;margin-bottom:12px}
+.dlg input{font-family:var(--mono);font-size:13px;color:var(--char);width:100%;padding:9px 11px;border:0;
+  background:var(--slab);border-radius:var(--r);box-shadow:var(--sh-sunk),0 0 0 1px var(--sink)}
+.dlg input::placeholder{color:var(--mute)}
+.dlg .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.dlg .pb{padding:9px 16px;font-size:13px}
+
+/* ===== 响应式 ===== */
+@media (max-width:1100px){
+  .head{gap:12px}
+  .actions{flex-direction:row}
+}
+@media (max-width:900px){
+  .body{flex-direction:column}
+  .toolcol{width:100%;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+  .toolcol .label{display:none}
+  .keygrid{display:flex;gap:6px}
+  .key.tool{min-width:52px}
+  .inks{display:flex;gap:8px}
+}
+@media (max-width:640px){
+  body{padding:8px}
+  .case.app{padding:14px}
+  .stage .lcd{width:190px}
+  .lcd .big{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){
+  .key,.pb,.knob::after{transition:none}
+}

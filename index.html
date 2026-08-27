@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WIRELESS CANVAS · 无限画布</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div class="case app">
+  <header class="head">
+    <div class="plate">
+      <h1><b>WIRELESS CANVAS</b> · 无限画布</h1>
+      <p><span id="board-name">—</span> · <span id="el-count">0</span> ELEMENTS · <span id="clock">--:--:--</span></p>
+    </div>
+
+    <div class="lamps" aria-label="状态指示灯">
+      <div class="lamp"><i id="lamp-save"></i>存储</div>
+      <div class="lamp"><i id="lamp-cap"></i>容量</div>
+    </div>
+
+    <div class="dial" aria-label="画板选择">
+      <div class="lbl">画板<br>选择</div>
+      <div class="knob" id="knob" aria-hidden="true"></div>
+      <fieldset id="board-list"></fieldset>
+    </div>
+
+    <div class="actions">
+      <div class="acts-row">
+        <button class="pb" id="btn-new-board">新建画板</button>
+        <button class="pb" id="btn-rename-board">重命名</button>
+        <button class="pb k" id="btn-del-board">删除画板</button>
+      </div>
+      <div class="acts-row">
+        <button class="pb y" id="btn-export-png">导出 PNG</button>
+        <button class="pb" id="btn-export-json">导出 JSON</button>
+        <button class="pb" id="btn-import-json">导入 JSON</button>
+      </div>
+      <input type="file" id="file-import" accept="application/json,.json" hidden>
+      <input type="file" id="file-image" accept="image/*" hidden>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="toolcol" aria-label="工具与档位">
+      <div class="label">工具</div>
+      <div class="keygrid" id="tools">
+        <button class="key tool sel" data-tool="select" title="选择 (V)">
+          <svg viewBox="0 0 16 16"><path d="M4 2l9 6.5-4.2.8L6.5 14 4 2z"/></svg><span>SELECT</span>
+        </button>
+        <button class="key tool" data-tool="pan" title="平移 (H)">
+          <svg viewBox="0 0 16 16"><path d="M8 2v12M2 8h12M8 2l-2 2M8 2l2 2M8 14l-2-2M8 14l2-2M2 8l2-2M2 8l2 2M14 8l-2-2M14 8l-2 2"/></svg><span>PAN</span>
+        </button>
+        <button class="key tool" data-tool="pen" title="画笔 (P)">
+          <svg viewBox="0 0 16 16"><path d="M3 13l7.5-7.5 2 2L5 15H3v-2zM10.5 5.5l1.5-1.5 2 2-1.5 1.5"/></svg><span>PEN</span>
+        </button>
+        <button class="key tool" data-tool="rect" title="矩形 (R)">
+          <svg viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="9" rx="1"/></svg><span>RECT</span>
+        </button>
+        <button class="key tool" data-tool="ellipse" title="椭圆 (O)">
+          <svg viewBox="0 0 16 16"><ellipse cx="8" cy="8" rx="5.8" ry="4.4"/></svg><span>ELLIPSE</span>
+        </button>
+        <button class="key tool" data-tool="line" title="直线 (L)">
+          <svg viewBox="0 0 16 16"><path d="M3 13L13 3"/></svg><span>LINE</span>
+        </button>
+        <button class="key tool" data-tool="arrow" title="箭头 (A)">
+          <svg viewBox="0 0 16 16"><path d="M3 13L13 3M13 3H7.5M13 3v5.5"/></svg><span>ARROW</span>
+        </button>
+        <button class="key tool" data-tool="text" title="文本 (T)">
+          <svg viewBox="0 0 16 16"><path d="M3.5 4.5V3h9v1.5M8 3v10M6.5 13h3"/></svg><span>TEXT</span>
+        </button>
+        <button class="key tool" data-tool="note" title="便签 (N)">
+          <svg viewBox="0 0 16 16"><path d="M2.5 2.5h11v7l-4 4h-7v-11zM9.5 13.5v-4h4"/></svg><span>NOTE</span>
+        </button>
+        <button class="key tool" data-tool="eraser" title="橡皮 (E)">
+          <svg viewBox="0 0 16 16"><path d="M6 13.5L2.8 10.3a1.5 1.5 0 010-2.1L7.9 3a1.5 1.5 0 012.1 0l3.2 3.2a1.5 1.5 0 010 2.1L8 13.5H6zM4.8 8.3l3.9 3.9M6 13.5h8"/></svg><span>ERASE</span>
+        </button>
+        <button class="key tool" id="btn-insert-image" title="插入图片">
+          <svg viewBox="0 0 16 16"><rect x="2.5" y="3" width="11" height="10" rx="1"/><circle cx="6" cy="6.5" r="1.2"/><path d="M2.5 11.5L6.5 8l3 3 2-2 2 2"/></svg><span>IMAGE</span>
+        </button>
+      </div>
+
+      <div class="label">墨色</div>
+      <div class="inks" id="inks"></div>
+
+      <div class="label">线宽</div>
+      <div class="keygrid strokes" id="strokes"></div>
+
+      <div class="label">填充</div>
+      <div class="keygrid fills" id="fills"></div>
+
+      <div class="label">历史</div>
+      <div class="keygrid hist">
+        <button class="key tool off" id="btn-undo" title="撤销 (⌘Z)">
+          <svg viewBox="0 0 16 16"><path d="M6 4L2.5 7.5 6 11M2.5 7.5H10a3.5 3.5 0 013.5 3.5v1"/></svg><span>UNDO</span>
+        </button>
+        <button class="key tool off" id="btn-redo" title="重做 (⇧⌘Z)">
+          <svg viewBox="0 0 16 16"><path d="M10 4l3.5 3.5L10 11M13.5 7.5H6A3.5 3.5 0 002.5 11v1"/></svg><span>REDO</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <canvas id="cv-main"></canvas>
+      <canvas id="cv-overlay"></canvas>
+
+      <div class="lcd" id="lcd" aria-label="画布读数">
+        <div class="big"><span id="lcd-zoom">100</span><small>%</small></div>
+        <div class="sub"><span id="lcd-pos">X +0 · Y +0</span><span id="lcd-tool">SELECT</span><span id="lcd-sel">SEL 0</span></div>
+        <div class="seg" id="lcd-seg" aria-hidden="true"></div>
+      </div>
+
+      <div class="zoomkeys">
+        <button class="key zk" id="zoom-out" title="缩小 (−)">−</button>
+        <button class="key zk wide" id="zoom-reset" title="回到 100%">100%</button>
+        <button class="key zk" id="zoom-in" title="放大 (+)">+</button>
+        <button class="key zk wide" id="zoom-fit" title="适配全部元素 (⌘1)">FIT</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

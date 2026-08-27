@@ -1,0 +1,68 @@
+/* rams-panel design tokens — 直接 <link> 或 @import 进项目，所有颜色/圆角/阴影只从这里取 */
+:root{
+  --alu:#D7D7D1; --panel:#EDEDE8; --slab:#F4F4F0; --sink:#C9C9C3;
+  --char:#2A2A2A; --mute:#7A7A74;
+  --yellow:#F2B705; --green:#2E8B57; --red:#D0342C;
+  --lcd:#8E9C8C; --lcd-ink:#1F2A1F;
+
+  --sans:'Jost','Futura','Avenir Next','Helvetica Neue',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+
+  --r-case:14px; --r:6px; --r-lcd:4px;
+  --sh-raise:0 1px 0 #fff inset,0 2px 0 #0002,0 3px 6px #0001;
+  --sh-sunk:inset 0 2px 4px #0003;
+  --sh-case:0 1px 0 #fff inset,0 -1px 0 #0002 inset,0 6px 18px #0002;
+  --brush:repeating-linear-gradient(90deg,transparent 0 3px,#0000000a 3px 4px);
+}
+
+/* 基础 */
+body{font-family:var(--sans);font-size:14px;line-height:1.45;color:var(--char);background:var(--alu);background-image:var(--brush)}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+
+/* 外壳 / 面板 */
+.case{background:var(--panel);border-radius:var(--r-case);padding:26px 30px 30px;box-shadow:var(--sh-case)}
+.slab{background:var(--slab);border-radius:var(--r);box-shadow:inset 0 0 0 1px #fff,0 1px 0 #0001,0 0 0 1px var(--sink);padding:18px 20px}
+.slab h2,.label{font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-bottom:12px}
+
+/* 指示灯 */
+.lamp i{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--sink);box-shadow:inset 0 2px 3px #0004,0 1px 0 #fff}
+.lamp i.on{background:var(--green);box-shadow:inset 0 1px 2px #fff8,0 0 8px #2E8B5788,0 1px 0 #fff}
+.lamp i.warn{background:var(--red);box-shadow:inset 0 1px 2px #fff8,0 0 8px #D0342C88,0 1px 0 #fff}
+.lamp i.busy{background:var(--yellow);box-shadow:inset 0 1px 2px #fff8,0 0 8px #F2B70588,0 1px 0 #fff}
+
+/* 按键（列表项） */
+.key{font:inherit;color:inherit;border:0;cursor:pointer;text-align:left;background:linear-gradient(#F9F9F6,#E9E9E4);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh-raise);transition:transform .08s,box-shadow .08s;position:relative}
+.key:hover{transform:translateY(1px);box-shadow:0 1px 0 #fff inset,0 1px 0 #0002}
+.key.sel{background:linear-gradient(#EDEDE8,#DDDDD7);box-shadow:var(--sh-sunk),0 0 0 2px var(--yellow)}
+.key.off{opacity:.55}
+
+/* 物理按钮 */
+.pb{font:inherit;font-weight:500;font-size:13px;color:var(--char);border:0;cursor:pointer;padding:10px 8px;border-radius:var(--r);background:linear-gradient(#F9F9F6,#E9E9E4);box-shadow:var(--sh-raise)}
+.pb:active{transform:translateY(2px);box-shadow:0 1px 0 #fff inset}
+.pb.y{background:linear-gradient(#FFD23F,#E9AE00)}
+.pb.k{background:linear-gradient(#3A3A3A,#222);color:#F0F0EA}
+
+/* 旋钮 + 单选 */
+.knob{position:relative;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3a3a3a,#1e1e1e 70%);box-shadow:0 2px 0 #fff inset,0 3px 6px #0006,0 0 0 4px var(--panel),0 0 0 5px var(--sink)}
+.knob::after{content:"";position:absolute;left:50%;top:6px;width:4px;height:16px;margin-left:-2px;background:var(--yellow);border-radius:2px;transform-origin:2px 31px;transform:rotate(var(--a,0deg));transition:transform .25s}
+.dial input[type=radio]{appearance:none;width:10px;height:10px;border-radius:50%;background:var(--sink);box-shadow:inset 0 1px 2px #0004;margin:0}
+.dial input:checked{background:var(--yellow)}
+
+/* 液晶读数窗 */
+.lcd{background:var(--lcd);border-radius:var(--r-lcd);padding:14px 16px;box-shadow:inset 0 3px 8px #0005,inset 0 0 0 1px #0003;color:var(--lcd-ink);font-family:var(--mono);background-image:repeating-linear-gradient(0deg,transparent 0 2px,#0000000a 2px 3px)}
+.lcd .big{font-size:38px;line-height:1;font-weight:500;letter-spacing:.02em}
+.lcd .seg{display:flex;gap:2px;margin-top:10px}
+.lcd .seg i{flex:1;height:6px;background:#0002;border-radius:1px}
+.lcd .seg i.f{background:var(--lcd-ink)} .lcd .seg i.h{background:#8B2A22}
+
+/* 规格表 / 事件行 */
+.spec{width:100%;border-collapse:collapse;font-size:13px}
+.spec th{text-align:left;font-weight:400;color:var(--mute);padding:6px 0;border-bottom:1px solid var(--sink);width:34%}
+.spec td{padding:6px 0;border-bottom:1px solid var(--sink);font-family:var(--mono);font-size:12.5px;text-align:right}
+.ev{display:grid;grid-template-columns:52px 12px 1fr;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--sink);font-size:13px}
+.ev time{font-family:var(--mono);font-size:12px;color:var(--mute)}
+.ev i{width:12px;height:12px;border-radius:50%;background:var(--sink);box-shadow:inset 0 1px 2px #0004}
+.ev i.warn{background:var(--red)} .ev i.busy{background:var(--yellow)}
+
+@media (prefers-reduced-motion:reduce){.knob::after,.key,.pb{transition:none}}
+@media (max-width:640px){.case{padding:18px}}
